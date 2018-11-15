@@ -22,10 +22,9 @@ void c_heap_insert(Heap *H, HeapNode *node)
 	int c, p;
     HeapNode temp;
 
-
-	H->a[H->n] = *node;
     c = H->n;
     p = (c - 1)/2;
+	H->a[c] = *node;
 	while (p >= 0) {
 		if ((H->a[p].frequency) > (H->a[c].frequency)) {
 			temp = H->a[p];
@@ -33,8 +32,7 @@ void c_heap_insert(Heap *H, HeapNode *node)
 			H->a[c] = temp;
 			c = p;
 			p = (c - 1) / 2;
-		}
-		else {
+		} else {
 			p = -1;
 		}
 	}
@@ -56,14 +54,14 @@ void c_heap_remove(Heap *H, HeapNode *node)
 			if (H->a[c].frequency >= H->a[c + 1].frequency) {
 				c++;
 			}
+
 			if (H->a[c].frequency <= H->a[p].frequency) {
 				temp = H->a[p];
 				H->a[p] = H->a[c];
 				H->a[c] = temp;
 				p = c;
 				c = 2 * p + 1;
-			}
-			else {
+			} else {
 				c = H->n;
 			}
 		}

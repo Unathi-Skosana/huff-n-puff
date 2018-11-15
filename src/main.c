@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
     root = malloc(sizeof(HeapNode));
 
 
-    c_heap_initialize(heap);
+    heap_initialize(heap);
 
     for (i = 0; i < MAX_HEAP_SIZE; i++) {
         if (freq_arr[i] != 0) {
             node = malloc(sizeof(HeapNode));
             node->frequency = freq_arr[i];
             node->c = i;
-            c_heap_insert(heap, node);
+            heap_insert(heap, node);
             ++total_count;
         }
     }

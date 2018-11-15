@@ -9,21 +9,20 @@ void c_huffman_build_tree(Heap *h, HeapNode **t)
 {
 	while (h->n != 0) {
 		if (h->n == 1) {
-
-			c_heap_remove(h, *t);
+			heap_remove(h, *t);
 		} else {
 				HeapNode *x = malloc(sizeof(HeapNode));
 				HeapNode *y = malloc(sizeof(HeapNode));
 
-				c_heap_remove(h, x);
-				c_heap_remove(h, y);
+				heap_remove(h, x);
+				heap_remove(h, y);
 
 				HeapNode *z = malloc(sizeof(HeapNode));
 				z->left = x;
 				z->right = y;
 				z->frequency = x->frequency + y->frequency;
 
-				c_heap_insert(h, z);
+				heap_insert(h, z);
 		}
 	}
 }
