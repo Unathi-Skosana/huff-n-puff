@@ -225,18 +225,18 @@ huffman_initialize_table:
 
     mov dword MAX_HEAP_SIZE, dword 256
     mov esi, t
-    mov	dword i, dword 0
+    mov  dword i, dword 0
 
     .for:
-    mov	[esi], dword 0
-    mov	[esi + 4], dword 0
-    add	esi, dword 8
-    mov	eax, dword i
+    mov  [esi], dword 0
+    mov  [esi + 4], dword 0
+    add  esi, dword 8
+    mov  eax, dword i
     inc eax
     mov dword i, eax
-    cmp	eax, MAX_HEAP_SIZE
-    jne	.for
+    cmp  eax, MAX_HEAP_SIZE
+    jne  .for
 
-    mov	esp, ebp
-    pop	ebp
+    mov  esp, ebp
+    pop  ebp
     ret

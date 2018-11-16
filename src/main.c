@@ -39,43 +39,43 @@ int main(int argc, char *argv[])
 
     if ((output_file = fopen(out, "wb")) == NULL) {
         fprintf(stderr, "Could not create output file");
-		exit(1);
-	}
+    exit(1);
+  }
 
-    heap = malloc(MAX_HEAP_SIZE * sizeof(Heap));
-    table = malloc(MAX_HEAP_SIZE * sizeof(HuffmanNode));
-    root = malloc(sizeof(HeapNode));
-
-
-    heap_initialize(heap);
-
-    for (i = 0; i < MAX_HEAP_SIZE; i++) {
-        if (freq_arr[i] != 0) {
-            node = malloc(sizeof(HeapNode));
-            node->frequency = freq_arr[i];
-            node->c = i;
-            heap_insert(heap, node);
-            ++total_count;
-        }
-    }
+  heap = malloc(MAX_HEAP_SIZE * sizeof(Heap));
+  table = malloc(MAX_HEAP_SIZE * sizeof(HuffmanNode));
+  root = malloc(sizeof(HeapNode));
 
 
-    huffman_initialize_table(table);
-    huffman_build_tree(heap, &root);
-    huffman_build_table(root, table, 0, 0);
+  heap_initialize(heap);
+
+  for (i = 0; i < MAX_HEAP_SIZE; i++) {
+      if (freq_arr[i] != 0) {
+          node = malloc(sizeof(HeapNode));
+          node->frequency = freq_arr[i];
+          node->c = i;
+          heap_insert(heap, node);
+          ++total_count;
+      }
+  }
 
 
-    write_header(freq_arr, total_count, output_file);
-    encode_bits(table, input_file, output_file);
+  huffman_initialize_table(table);
+  huffman_build_tree(heap, &root);
+  huffman_build_table(root, table, 0, 0);
 
-    fclose(output_file);
-	fclose(input_file);
 
-	free(root->right);
-	free(root->left);
-	free(node);
-	free(root);
-    free(table);
-    free(heap);
+  write_header(freq_arr, total_count, output_file);
+  encode_bits(table, input_file, output_file);
+
+  fclose(output_file);
+  fclose(input_file);
+
+  free(root->right);
+  free(root->left);
+  free(node);
+  free(root);
+  free(table);
+  free(heap);
 
 }
