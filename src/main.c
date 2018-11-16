@@ -60,9 +60,9 @@ int main(int argc, char *argv[])
     }
 
 
-    c_huffman_initialize_table(table);
-    c_huffman_build_tree(heap, &root);
-    c_huffman_build_table(root, table, 0, 0);
+    huffman_initialize_table(table);
+    huffman_build_tree(heap, &root);
+    huffman_build_table(root, table, 0, 0);
 
 
     write_header(freq_arr, total_count, output_file);

@@ -5,34 +5,36 @@ global heap_insert
 global heap_remove
 
 %define H [ebp + 8]
-%define	MAX_HEAP_SIZE [ebp - 4]
-%define	i [ebp - 8]
+%define MAX_n [ebp - 4]
+%define i [ebp - 8]
 
 heap_initialize:
   push ebp
   mov ebp, esp
   sub esp, 8
 
-  mov dword MAX_HEAP_SIZE, dword 256
+  mov dword MAX_n, dword 256
   mov eax, H
   mov [eax], dword 0
-  mov	dword i, dword 0
+  mov  dword i, dword 0
 
-  add	eax, dword 4
+  add  eax, dword 4
+
   .for:
-    mov	[eax], dword 0
-    mov	[eax + 4], dword 0
-    mov	[eax + 8], dword 0
-    mov	[eax + 12], dword 0
-    add	eax, dword 16
-    mov	edx, dword i
-    inc	dword i
-    cmp	edx, MAX_HEAP_SIZE
-    jne	.for
+   mov  [eax], dword 0
+   mov  [eax + 4], dword 0
+   mov  [eax + 8], dword 0
+   mov  [eax + 12], dword 0
+   add  eax, dword 16
+   mov  edx, dword i
+   inc  edx
+   mov dword i, edx
+   cmp  edx, MAX_n
+   jne  .for
 
-    mov	esp, ebp
-    pop	ebp
-    ret
+   mov  esp, ebp
+   pop  ebp
+   ret
 
 
 %define H    [ebp + 8]
@@ -67,7 +69,7 @@ heap_insert:
 
   .while:
   mov eax, dword p
-  cmp	eax, dword 0
+  cmp  eax, dword 0
   jl .done
 
   mov eax, dword p
@@ -134,151 +136,129 @@ heap_insert:
   mov eax, [ebx]
   inc eax
   mov [ebx], eax
-  mov	esp, ebp
-  pop	ebp
+  mov  esp, ebp
+  pop  ebp
   ret
 
-%define H    [ebp + 8]
-%define node [ebp + 12]
-%define c    [ebp - 4]
-%define p    [ebp - 8]
-%define temp [ebp - 24]
+  %define  H     [ebp + 8]
+  %define  node  [ebp + 12]
+  %define  n     [ebp - 4]
+  %define  p     [ebp - 8]
+  %define  c     [ebp - 12]
+  %define  temp  [ebp - 28]
 
-heap_remove:
-   push ebp
-   mov ebp, esp
-   sub esp, 24
+  heap_remove:
+    push  ebp
+    mov  ebp, esp
+    push  ebx
 
-   mov ebx, H
-   mov eax, [ebx]
-   cmp eax, dword 0
+    mov  eax, H
+    mov  eax, [eax]
+    mov  n, eax
 
-   jl .done
+    cmp  eax, dword 0
+    jl  .done
 
-   mov esi, ebx
-   add esi, dword 4
-   mov edi, node
+    mov  ebx, node
+    mov  eax, H
+    add  eax, 4
+    mov  esi, eax
+    mov  edi, ebx
+    mov  ecx, 4
+    rep  movsd
 
-   mov ecx, dword 4
-   rep movsd
+    mov  ecx, n
+    dec  ecx
+    mov  edx, ecx
+    imul  ecx, 16
+    mov  edi, eax
+    add  eax, ecx
+    mov  esi, eax
+    mov  ecx, 4
+    rep  movsd
 
-   mov edi, ebx
-   add edi, dword 4
+    mov  eax, n
+    dec  eax
+    mov  n, eax
+    mov  ebx, H
+    mov  [ebx], eax
+    mov  p, dword 0
+    mov  c, dword 1
 
-   mov eax, [ebx]
-   dec eax
-   imul eax, dword 16
-   mov esi, edi
-   add esi, eax
+  .while:
+    mov  ebx, c
+    mov  edx, n
+    dec  edx
+    cmp  ebx, edx
+    jg  .done
 
-   mov ecx, dword 4
-   rep movsd
+    mov  ecx, dword H
+    add  ecx, 4
+    mov  eax, ecx
+    mov  ebx, dword c
+    mov  edx, ebx
+    inc  ebx
+    imul  ebx, 16
+    imul  edx, 16
+    add  ecx, ebx
+    add  eax, edx
+    mov  eax, [eax]
+    mov  ecx, [ecx]
+    cmp  eax, ecx
+    jl  .if2
+    mov  eax, dword c
+    inc  eax
+    mov  c, eax
 
-   mov eax, [ebx]
-   dec eax
-   mov [ebx], eax
+  .if2:
+    mov  ecx, dword H
+    add  ecx, 4
+    mov  ebx, dword p
+    imul  ebx, 16
+    mov  edx, ecx
+    add  ecx, ebx
+    mov  ebx, dword c
+    imul  ebx, 16
+    add  edx, ebx
+    mov  eax, [ecx]
+    mov  ebx, [edx]
+    cmp  ebx, eax
+    jg  .else
 
-   mov dword p, dword 0
-   mov dword c, dword 1
+    mov  eax, ecx
 
-   .while:
-    mov esi, [ebx]
-    dec esi
-    mov eax, dword c
-    cmp eax, esi
+    mov  esi, eax
+    lea  edi, temp
+    mov  ecx, 4
+    rep  movsd
 
-    jg .done
+    mov  esi, edx
+    mov  edi, eax
+    mov  ecx, 4
+    rep  movsd
 
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword c
-    inc eax
-    imul eax, dword 16
-    add edi, eax
-    mov ecx, [edi]
+    lea  esi, temp
+    mov  edi, edx
+    mov  ecx, 4
+    rep  movsd
 
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword c
-    imul eax, dword 16
-    add edi, eax
-    mov eax, [edi]
+    mov  eax, dword c
+    mov  p, eax
+    mov  edx, dword p
+    sal  edx, 1
+    inc  edx
+    mov  c, edx
 
-    cmp eax, ecx
-    jl .after_inc
+    jmp  .while
 
-    mov eax, dword c
-    inc eax
-    mov dword c, eax
+  .else:
+    mov  eax, n
+    mov  c, eax
 
-   .after_inc:
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword p
-    imul eax, dword 16
-    add edi, eax
-    mov ecx, [edi]
+    jmp  .while
 
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword c
-    imul eax, dword 16
-    add edi, eax
-    mov eax, [edi]
-
-    cmp eax, ecx
-    jg .else
-
-    mov esi, ebx
-    add esi, dword 4
-    mov eax, dword p
-    imul eax, dword 16
-    add esi, eax
-    mov edi, temp
-
-    mov ecx, dword 4
-    rep movsd
-
-    mov esi, ebx
-    add esi, dword 4
-    mov eax, dword c
-    imul eax, dword 16
-    add esi, eax
-
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword p
-    imul eax, dword 16
-    add edi, eax
-
-    mov ecx, dword 4
-    rep movsd
-
-    mov edi, ebx
-    add edi, dword 4
-    mov eax, dword c
-    imul eax, dword 16
-    add edi, eax
-    mov esi, temp
-
-    mov ecx, dword 4
-    rep movsd
-
-    mov eax, dword c
-    mov dword p, eax
-    sal eax, 1
-    inc eax
-    mov dword c, eax
-
-    jmp .while
-
-    .else:
-    mov eax, [ebx]
-    mov dword c, eax
-
-    jmp .while
-
-   .done:
-    mov	esp, ebp
-    pop	ebp
+  .done:
+    pop  ebx
+    mov  esp, ebp
+    pop  ebp
     ret
